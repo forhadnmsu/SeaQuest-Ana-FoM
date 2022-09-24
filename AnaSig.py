@@ -1,6 +1,4 @@
 import ROOT
-from ROOT import TCanvas,TLine, TFile, TProfile, TNtuple, TH1F,TH1D, TH2F, TCut
-from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle, gROOT,TStyle
 from ROOT import TPaveLabel, TPave, TArrow, TText, TPaveText
 import numpy as np
 from math import *
@@ -12,16 +10,15 @@ bin_y_offset=20
 bin_low=0.0
 bin_high=0.3
 
-cut_lists=[["nHits1 + nHits2",[30,20,50],"nHits1 + nHits2","nHits in #mu^{+} and #mu^{-} tracks combined; nHits1 + nHits2;"],
-	["atan(y1_st3/y1_st1)",[50,0.4,1.8], "atan_y1_st3_y1_st1","atan(y1_st3/y1_st1);atan(y1_st3/y1_st1);"],
-	["y1_st1*y1_st3",[50,0,100], "y1_st1*y1_st3","y1_st1*y1_st3;y1_st1*y1_st3;"],
-	["y2_st1*y2_st3",[50,0,100], "y2_st1*y2_st3","y2_st1*y2_st3;y2_st1*y2_st3;"],
-	["dz",[50,-200,250], "vetrex_z","vetrex_z;vetrex_z;"],
+cut_lists=[["atan(y1_st3/y1_st1)",[50,0.4,1.8], "atan_y1_st3_y1_st1","atan(y1_st3/y1_st1);atan(y1_st3/y1_st1);"],
+	["atan(y2_st3/y2_st1)",[50,0.4,1.8], "atan_y2_st3_y2_st1","atan(y2_st3/y2_st1);atan(y2_st3/y2_st1);"],
 	["z1_v",[50,-250,250], "z1_v","z1_v;z2_v;"],
 	["z2_v",[50,-250,250], "z2_v","z2_v;z2_v;"],
-	["x1_t*x1_t+(y1_t-1.6)*(y1_t-1.6)",[50,0,800], "x1_t1_y1_toffset2","#mu^{+} Transverse Distance at Target;x1_t*x1_t+(y1_t-1.6)*(y1_t-1.6);"],
+	["pz1_st1",[20,5,80], "pz1_st1","pz1_st1;pz1_st1;"],
+	["pz2_st1",[20,5,80], "pz2_st1","pz2_st1;pz2_st1;"],
+	["x1_t*x1_t+(y1_t-1.6)*(y1_t-1.6)",[50,0,1500], "x1_t1_y1_toffset2","#mu^{+} Transverse Distance at Target;x1_t*x1_t+(y1_t-1.6)*(y1_t-1.6);"],
 	["x1_d*x1_d+(y1_d-1.6)*(y1_d-1.6)",[50,0,300], "x1_d1_y1_toffset2","#mu^{-} Transverse Distance at Dump;x1_d*x1_d+(y1_d-1.6)*(y1_d-1.6);"],
-	["x2_t*x2_t+(y2_t-1.6)*(y2_t-1.6)",[50,0,800], "x2_t2_y2_toffset2","#mu^{+} Transverse Distance at Target;x2_t*x2_t+(y2_t-1.6)*(y2_t-1.6);"],
+	["x2_t*x2_t+(y2_t-1.6)*(y2_t-1.6)",[50,0,1500], "x2_t2_y2_toffset2","#mu^{+} Transverse Distance at Target;x2_t*x2_t+(y2_t-1.6)*(y2_t-1.6);"],
 	["x2_d*x2_d+(y2_d-1.6)*(y2_d-1.6)",[50,0,300], "x2_d2_y2_toffset2","#mu^{-} Transverse Distance at Dump;x2_d*x2_d+(y2_d-1.6)*(y2_d-1.6);"],
 	["abs(px1_st1-px1_st3)",[50,0.4,0.425], "px1_st1_px1_st3","abs(Px_{#mu+}^{}_{st1} - Px_{#mu+}^{}_{st3});abs(px1_st1 − px1_st3);"],
 	["abs(py1_st1-py1_st3)",[50,0,0.01], "py1_st1_py1_st3","abs(Py_{#mu+}^{}_{st1} - Py_{#mu+}^{}_{st3});abs(py1_st1 − py1_st3);"],
@@ -31,12 +28,23 @@ cut_lists=[["nHits1 + nHits2",[30,20,50],"nHits1 + nHits2","nHits in #mu^{+} and
 	["abs(pz2_st1-pz2_st3)",[50,0,0.1], "pz2_st1_pz2_st3","abs(Pz_{#mu-}^{}_{st1} - Pz_{#mu-}^{}_{st3});abs(pz2_st1 − pz2_st3);"],
 	["chisq1_target-chisq1_dump",[20,-20,80], "chisq1_target-chisq1_dump","#chi_{#mu+}^{2}_{target} - #chi_{#mu+}^{2}_{dump}; chisq1_target - chisq1_dump;"],
 	["chisq2_target-chisq2_dump",[20,-20,80], "chisq2_target-chisq2_dump","#chi_{#mu-}^{2}_{target} - #chi_{#mu-}^{2}_{dump}; chisq2_target - chisq2_dump;"],
+	["y1_st1*y1_st3",[50,0,2000], "y1_st1*y1_st3","y1_st1*y1_st3;y1_st1*y1_st3;"],
+	["y2_st1*y2_st3",[50,0,2000], "y2_st1*y2_st3","y2_st1*y2_st3;y2_st1*y2_st3;"],
+	["nHits1 + nHits2",[30,20.5,50.5],"nHits1 + nHits2","nHits in #mu^{+} and #mu^{-} tracks combined; nHits1 + nHits2;"],
+	["nHits1St1 + nHits2St1",[20,0.5,20.5],"nHits1St1 + nHits2St1","nHits of #mu^{+} and #mu^{-} in St1 ;nHits1St1 + nHits2St1;"],
+	["dz",[50,-200,250], "vetrex_z","vetrex_z;vetrex_z;"],
 	["abs(dy-1.6)",[50,0,0.5], "vertex_y-1.6","Dimuon vertex: (y-1.6cm) ;vertex_y_1.6;"],
-	["abs(x1_st1 + x2_st1)",[50,0,20.0], "x_st1_st2","abs(x_{st1}^{#mu+} + x_{st1}^{#mu-});abs(x1_st1 + x2_st1)"],
-	["abs(dx*dx+(dy-1.6)*(dy-1.6))",[20,0.0,0.20], "abs(dx2_dyOff2)","abs(dx*dx + (dy-1.6)*(dy-1.6));abs(dx*dx + (dy-1.6)*(dy-1.6));"],
+	["abs(x1_st1 + x2_st1)",[50,0,100.0], "x_st1_st2","abs(x_{st1}^{#mu+} + x_{st1}^{#mu-});abs(x1_st1 + x2_st1)"],
+	["dx*dx+(dy-1.6)*(dy-1.6)",[20,0.0,0.20], "dx2_dyOff2","dx*dx + (dy-1.6)*(dy-1.6);dx*dx + (dy-1.6)*(dy-1.6);"],
 	["abs(z1_v - z2_v)",[20,0.0,200.0], "track_zVertex_diff","abs(z^{#mu+}_{v} - z^{#mu-}_{v}); abs(z1_v - z2_v);"],
-	["chisq_dimuon",[50,0,10.0], "chisq_dimuon","chisq_dimuon; chisq_dimuon;"],
-	["xF",[50,-1.0,1.0], "xF","xF;xF;"]
+	["chisq_dimuon",[50,0,50.0], "chisq_dimuon","chisq_dimuon; chisq_dimuon;"],
+	["xF",[50,-1.0,1.0], "xF","xF;xF;"],
+	["dpx*dpx+dpy*dpy",[50,0,10], "dpx*dpx+dpy*dpy","dpx*dpx+dpy*dpy;dpx*dpx+dpy*dpy;"],
+	["abs(dpx)",[50,0,2.5], "abs(dpx)","abs(dpx);abs(dpx);"],
+	["abs(dpy)",[50,0,5.5], "abs(dpy)","abs(dpy);abs(dpy);"],
+	["abs(dpz)",[50,0,120], "abs(dpz)","abs(dpz);abs(dpz);"],
+	["abs(dx)",[20,0,0.5], "abs(dx)","abs(dx);abs(dx);"],
+	["abs(dy-1.6)",[20,0,0.4], "abs(dy-1.6)","abs(dy-1.6);abs(dy-1.6);"]
 	]
 
 #print(cut_lists)
@@ -49,7 +57,7 @@ def getSig(h_data,h_sqrt_int1,h_sqrt_int2,h_mc, h_mc_int1, h_mc_int2):
 	#h_data.Add(h_data_mix.GetPtr(),-1)
 	h_data.GetYaxis().SetMaxDigits(3)
 	h_data.GetYaxis().SetTitleOffset(0.0)
-	h_data.SetTitle("Unmix -Mix = Signal Data: "+ str(cut_lists[i_list][3])+"Counts")
+	h_data.SetTitle("Unmix - Mix = Signal Data: "+ str(cut_lists[i_list][3])+"Counts")
 	h_data.Draw()
 	h_data.SetLineColor(1)
 	c01.cd(2)
@@ -57,14 +65,15 @@ def getSig(h_data,h_sqrt_int1,h_sqrt_int2,h_mc, h_mc_int1, h_mc_int2):
 	h_mc.GetYaxis().SetMaxDigits(3)
 	h_mc.SetTitle("Monte Carlo: "+ str(cut_lists[i_list][3])+"Counts")
 	h_mc.Draw("hist")
-	c01.SaveAs("test_"+str(i_list)+".png")
+	#c01.SaveAs("test_"+str(i_list)+".png")
 	nbin = h_data.GetNbinsX()
 	for i_bin in range(1,nbin+1):	
 		h_sqrt_int1.SetBinContent(i_bin, ROOT.TMath.Sqrt(h_data.Integral(1,i_bin)))
 		h_sqrt_int2.SetBinContent(i_bin, ROOT.TMath.Sqrt(h_data.Integral(i_bin,nbin)))
 		h_mc_int1.SetBinContent(i_bin, h_mc.Integral(1,i_bin))
 		h_mc_int2.SetBinContent(i_bin, h_mc.Integral(i_bin,nbin))
-		print ("i_bin: ", i_bin, "h_data bin: ",h_data.GetBinContent(i_bin), " sqrt integral: ", ROOT.TMath.Sqrt(h_data.Integral(1,i_bin)))
+		#print ("i_bin: ", i_bin, "h_data bin: ",h_data.GetBinContent(i_bin), " sqrt integral: ", ROOT.TMath.Sqrt(h_data.Integral(1,i_bin)))
+
 	'''
 	c01.cd(3)
 	h_mc_int1.SetMarkerStyle(21)
